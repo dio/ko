@@ -161,6 +161,17 @@ func (bo *BuildOptions) LoadConfig() error {
 		bo.BuildConfigs = buildConfigs
 	}
 
+	if len(bo.Labels) == 0 {
+		var labels []string
+		if err := v.UnmarshalKey("labels", &labels); err != nil {
+			return fmt.Errorf("configuration section 'labels' cannot be parsed")
+		}
+		if err := build.ApplyTemplating(labels, build.CreateTemplateData()); err != nil {
+			return fmt.Errorf("could not render template: %w", err)
+		}
+		bo.Labels = labels
+	}
+
 	return nil
 }
 

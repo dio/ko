@@ -16,6 +16,7 @@ package options
 
 import (
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -27,6 +28,7 @@ func TestDefaultBaseImage(t *testing.T) {
 	bo := &BuildOptions{
 		WorkingDirectory: "testdata/config",
 	}
+	t.Setenv("SOURCE", "ko.build")
 	err := bo.LoadConfig()
 	if err != nil {
 		t.Fatal(err)
@@ -35,6 +37,43 @@ func TestDefaultBaseImage(t *testing.T) {
 	wantDefaultBaseImage := "alpine" // matches value in ./testdata/config/.ko.yaml
 	if bo.BaseImage != wantDefaultBaseImage {
 		t.Fatalf("wanted BaseImage %s, got %s", wantDefaultBaseImage, bo.BaseImage)
+	}
+}
+
+func TestLabels(t *testing.T) {
+	bo := &BuildOptions{
+		WorkingDirectory: "testdata/config",
+	}
+
+	tests := []struct {
+		exportedEnvs map[string]string
+		wantLabels   []string
+		wantError    bool
+	}{
+		{
+			exportedEnvs: map[string]string{
+				"SOURCE": "ko.build",
+			},
+			wantLabels: []string{"ENGINE=ko", "SOURCE=ko.build"},
+			wantError:  false,
+		},
+		{
+			wantError: true,
+		},
+	}
+
+	for _, test := range tests {
+		for name, value := range test.exportedEnvs {
+			t.Setenv(name, value)
+		}
+		err := bo.LoadConfig()
+		if err != nil && !test.wantError {
+			t.Fatal(err)
+		}
+		wantLabels := []string{"ENGINE=ko", "SOURCE=ko.build"} // matches value in ./testdata/config/.ko.yaml
+		if !reflect.DeepEqual(wantLabels, bo.Labels) {
+			t.Fatalf("wanted %v, got %v", wantLabels, bo.Labels)
+		}
 	}
 }
 
@@ -126,7 +165,8 @@ func TestOverrideConfigPath(t *testing.T) {
 			oldEnv := os.Getenv(envName)
 			defer os.Setenv(envName, oldEnv)
 
-			os.Setenv(envName, tc.koConfigPath)
+			t.Setenv("SOURCE", "ko.build")
+			t.Setenv(envName, tc.koConfigPath)
 			err := bo.LoadConfig()
 			if err == nil {
 				if tc.err != "" {

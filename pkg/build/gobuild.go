@@ -685,7 +685,7 @@ func (g *gobuild) tarKoData(ref reference, platform *v1.Platform) (*bytes.Buffer
 	return buf, walkRecursive(tw, root, chroot, creationTime, platform)
 }
 
-func createTemplateData() map[string]interface{} {
+func CreateTemplateData() map[string]interface{} {
 	envVars := map[string]string{
 		"LDFLAGS": "",
 	}
@@ -699,7 +699,7 @@ func createTemplateData() map[string]interface{} {
 	}
 }
 
-func applyTemplating(list []string, data map[string]interface{}) error {
+func ApplyTemplating(list []string, data map[string]interface{}) error {
 	for i, entry := range list {
 		tmpl, err := template.New("argsTmpl").Option("missingkey=error").Parse(entry)
 		if err != nil {
@@ -720,10 +720,10 @@ func applyTemplating(list []string, data map[string]interface{}) error {
 func createBuildArgs(buildCfg Config) ([]string, error) {
 	var args []string
 
-	data := createTemplateData()
+	data := CreateTemplateData()
 
 	if len(buildCfg.Flags) > 0 {
-		if err := applyTemplating(buildCfg.Flags, data); err != nil {
+		if err := ApplyTemplating(buildCfg.Flags, data); err != nil {
 			return nil, err
 		}
 
@@ -731,7 +731,7 @@ func createBuildArgs(buildCfg Config) ([]string, error) {
 	}
 
 	if len(buildCfg.Ldflags) > 0 {
-		if err := applyTemplating(buildCfg.Ldflags, data); err != nil {
+		if err := ApplyTemplating(buildCfg.Ldflags, data); err != nil {
 			return nil, err
 		}
 

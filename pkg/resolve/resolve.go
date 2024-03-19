@@ -113,29 +113,30 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 				dir := path.Dir(parsed.Path)
 				node.node.Value = fmt.Sprintf("%s%s", parsed.Host, dir)
 			case "repository":
-				if strings.Contains(parsed.Path, "@") {
-					node.node.Value = fmt.Sprintf("%s%s", parsed.Host, parsed.Path[:strings.LastIndex(parsed.Path, "@")])
+				if strings.Contains(parsed.Path, ":") {
+					node.node.Value = fmt.Sprintf("%s%s", parsed.Host, parsed.Path[:strings.Index(parsed.Path, ":")])
 				} else {
-					node.node.Value = fmt.Sprintf("%s%s", parsed.Host, parsed.Path[:strings.LastIndex(parsed.Path, ":")])
+					node.node.Value = fmt.Sprintf("%s%s", parsed.Host, parsed.Path[:strings.Index(parsed.Path, "@")])
 				}
 			case "name":
 				basePath := path.Base(parsed.Path)
-				if strings.Contains(basePath, "@") {
-					node.node.Value = basePath[:strings.LastIndex(basePath, "@")]
-				} else {
-					node.node.Value = basePath[:strings.LastIndex(basePath, ":")]
+				node.node.Value = basePath
+				if strings.Contains(basePath, ":") {
+					node.node.Value = basePath[:strings.Index(basePath, ":")]
+				} else if strings.Contains(basePath, "@") {
+					node.node.Value = basePath[:strings.Index(basePath, "@")]
 				}
 			case "tag":
 				if strings.Contains(parsed.Path, "@") {
-					node.node.Value = parsed.Path[strings.LastIndex(parsed.Path, "@")+1:]
+					node.node.Value = "latest@" + parsed.Path[strings.Index(parsed.Path, "@")+1:]
 				} else {
-					node.node.Value = parsed.Path[strings.LastIndex(parsed.Path, ":")+1:]
+					node.node.Value = parsed.Path[strings.Index(parsed.Path, ":")+1:]
 				}
 			case "tagWithSeparator":
 				if strings.Contains(parsed.Path, "@") {
-					node.node.Value = parsed.Path[strings.LastIndex(parsed.Path, "@"):]
+					node.node.Value = parsed.Path[strings.Index(parsed.Path, "@"):]
 				} else {
-					node.node.Value = parsed.Path[strings.LastIndex(parsed.Path, ":"):]
+					node.node.Value = parsed.Path[strings.Index(parsed.Path, ":"):]
 				}
 			default:
 				node.node.Value = d

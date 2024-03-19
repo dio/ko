@@ -45,26 +45,26 @@ func Test_gobuilds(t *testing.T) {
 		{
 			description: "default builder used when no build configs provided",
 			opts:        opts,
-			importpath:  "github.com/google/ko",
+			importpath:  "github.com/dio/ko",
 		},
 		{
 			description:      "match build config using fully qualified import path",
 			workingDirectory: "../..",
 			buildConfigs: map[string]Config{
-				"github.com/google/ko/test": {
+				"github.com/dio/ko/test": {
 					ID:  "build-config-0",
 					Dir: "test",
 				},
 			},
 			nilDefaultBuilder: true,
 			opts:              opts,
-			importpath:        "github.com/google/ko/test",
+			importpath:        "github.com/dio/ko/test",
 		},
 		{
 			description:      "match build config using ko scheme-prefixed fully qualified import path",
 			workingDirectory: "../..",
 			buildConfigs: map[string]Config{
-				"github.com/google/ko/test": {
+				"github.com/dio/ko/test": {
 					ID:  "build-config-1",
 					Dir: "test",
 				},
@@ -77,7 +77,7 @@ func Test_gobuilds(t *testing.T) {
 			description:      "find build config by resolving local import path to fully qualified import path",
 			workingDirectory: "../../test",
 			buildConfigs: map[string]Config{
-				"github.com/google/ko/test": {
+				"github.com/dio/ko/test": {
 					ID: "build-config-2",
 				},
 			},
@@ -89,7 +89,7 @@ func Test_gobuilds(t *testing.T) {
 			description:      "find build config by matching local import path to build config directory",
 			workingDirectory: "../..",
 			buildConfigs: map[string]Config{
-				"github.com/google/ko/tes12t": {
+				"github.com/dio/ko/tes12t": {
 					ID:  "build-config-3",
 					Dir: "test",
 				},

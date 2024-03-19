@@ -20,8 +20,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/dio/ko/pkg/publish"
 	"github.com/google/go-containerregistry/pkg/v1/random"
-	"github.com/google/ko/pkg/publish"
 )
 
 func TestMulti(t *testing.T) {

@@ -18,7 +18,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/google/ko/pkg/commands/options"
+	"github.com/dio/ko/pkg/commands/options"
 )
 
 func TestMakeNamer(t *testing.T) {

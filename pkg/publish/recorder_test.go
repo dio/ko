@@ -20,9 +20,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/dio/ko/pkg/build"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/random"
-	"github.com/google/ko/pkg/build"
 	"github.com/sigstore/cosign/v2/pkg/oci/signed"
 )
 

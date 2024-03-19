@@ -1,4 +1,4 @@
-module github.com/google/ko
+module github.com/dio/ko
 
 go 1.21
 

@@ -19,12 +19,12 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/dio/ko/pkg/build"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/empty"
 	"github.com/google/go-containerregistry/pkg/v1/layout"
 	"github.com/google/go-containerregistry/pkg/v1/types"
-	"github.com/google/ko/pkg/build"
 )
 
 type LayoutPublisher struct {

@@ -19,9 +19,9 @@ import (
 	"io"
 	"strings"
 
+	"github.com/dio/ko/pkg/build"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/ko/pkg/build"
 	"github.com/sigstore/cosign/v2/pkg/oci"
 	"github.com/sigstore/cosign/v2/pkg/oci/walk"
 )

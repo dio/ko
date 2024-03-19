@@ -19,7 +19,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/google/ko/pkg/commands"
+	"github.com/dio/ko/pkg/commands"
 )
 
 func main() {

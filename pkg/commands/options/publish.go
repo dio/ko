@@ -20,8 +20,8 @@ import (
 	"os"
 	"path"
 
+	"github.com/dio/ko/pkg/publish"
 	"github.com/google/go-containerregistry/pkg/v1/daemon"
-	"github.com/google/ko/pkg/publish"
 	"github.com/spf13/cobra"
 )
 

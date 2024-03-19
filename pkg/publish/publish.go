@@ -17,8 +17,8 @@ package publish
 import (
 	"context"
 
+	"github.com/dio/ko/pkg/build"
 	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/ko/pkg/build"
 )
 
 // Interface abstracts different methods for publishing images.

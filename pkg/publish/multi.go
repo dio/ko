@@ -18,8 +18,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/dio/ko/pkg/build"
 	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/ko/pkg/build"
 )
 
 // MultiPublisher creates a publisher that publishes to all

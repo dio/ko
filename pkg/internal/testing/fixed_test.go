@@ -18,10 +18,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dio/ko/pkg/build"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/random"
-	"github.com/google/ko/pkg/build"
 )
 
 func TestFixedPublish(t *testing.T) {

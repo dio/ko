@@ -85,7 +85,7 @@ func TestGoBuildQualifyImport(t *testing.T) {
 		},
 		{
 			description:         "non-strict qualified import path",
-			rawImportpath:       "github.com/google/ko",
+			rawImportpath:       "github.com/dio/ko",
 			dir:                 "",
 			qualifiedImportpath: "ko://github.com/google/ko",
 			expectError:         false,
@@ -424,7 +424,7 @@ func TestGoBuildNoKoData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("random.Image() = %v", err)
 	}
-	importpath := "github.com/google/ko"
+	importpath := "github.com/dio/ko"
 
 	creationTime := v1.Time{Time: time.Unix(5000, 0)}
 	ng, err := NewGo(
@@ -705,7 +705,7 @@ func TestGoBuild(t *testing.T) {
 	if err != nil {
 		t.Fatalf("random.Image() = %v", err)
 	}
-	importpath := "github.com/google/ko"
+	importpath := "github.com/dio/ko"
 
 	creationTime := v1.Time{Time: time.Unix(5000, 0)}
 	ng, err := NewGo(
@@ -785,7 +785,7 @@ func TestGoBuildWithKOCACHE(t *testing.T) {
 	if err != nil {
 		t.Fatalf("random.Image() = %v", err)
 	}
-	importpath := "github.com/google/ko"
+	importpath := "github.com/dio/ko"
 
 	creationTime := v1.Time{Time: time.Unix(5000, 0)}
 	ng, err := NewGo(
@@ -818,7 +818,7 @@ func TestGoBuildWithoutSBOM(t *testing.T) {
 	if err != nil {
 		t.Fatalf("random.Image() = %v", err)
 	}
-	importpath := "github.com/google/ko"
+	importpath := "github.com/dio/ko"
 
 	creationTime := v1.Time{Time: time.Unix(5000, 0)}
 	ng, err := NewGo(
@@ -857,7 +857,7 @@ func TestGoBuildIndex(t *testing.T) {
 	if err != nil {
 		t.Fatalf("random.Image() = %v", err)
 	}
-	importpath := "github.com/google/ko"
+	importpath := "github.com/dio/ko"
 
 	creationTime := v1.Time{Time: time.Unix(5000, 0)}
 	ng, err := NewGo(
@@ -929,7 +929,7 @@ func TestNestedIndex(t *testing.T) {
 	if err != nil {
 		t.Fatalf("random.Image() = %v", err)
 	}
-	importpath := "github.com/google/ko"
+	importpath := "github.com/dio/ko"
 
 	nestedBase := mutate.AppendManifests(empty.Index, mutate.IndexAddendum{Add: base})
 
@@ -1195,7 +1195,7 @@ func TestGoBuildConsistentMediaTypes(t *testing.T) {
 				t.Fatalf("NewGo() = %v", err)
 			}
 
-			importpath := "github.com/google/ko"
+			importpath := "github.com/dio/ko"
 
 			result, err := ng.Build(context.Background(), StrictScheme+importpath)
 			if err != nil {

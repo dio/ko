@@ -17,6 +17,8 @@ package resolve
 import (
 	"context"
 	"fmt"
+	"net/url"
+	"path"
 	"strings"
 	"sync"
 
@@ -27,13 +29,18 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type nodeRef struct {
+	part string
+	node *yaml.Node
+}
+
 // ImageReferences resolves supported references to images within the input yaml
 // to published image digests.
 //
 // If a reference can be built and pushed, its yaml.Node will be mutated.
 func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Interface, publisher publish.Interface) error {
 	// First, walk the input objects and collect a list of supported references
-	refs := make(map[string][]*yaml.Node)
+	refs := make(map[string][]*nodeRef)
 
 	for _, doc := range docs {
 		it := refsFromDoc(doc)
@@ -41,11 +48,26 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 		for node, ok := it(); ok; node, ok = it() {
 			ref := strings.TrimSpace(node.Value)
 
+			parsed, err := url.Parse(ref)
+			if err != nil {
+				return fmt.Errorf("failed to parse %q: %w", ref, err)
+			}
+			ref = parsed.Scheme + "://" + parsed.Host + parsed.Path
+
 			if err := builder.IsSupportedReference(ref); err != nil {
 				return fmt.Errorf("found strict reference but %s is not a valid import path: %w", ref, err)
 			}
 
-			refs[ref] = append(refs[ref], node)
+			parsedQuery, err := url.ParseQuery(parsed.RawQuery)
+			if err != nil {
+				return fmt.Errorf("failed to parse query %q: %w", parsed.RawQuery, err)
+			}
+
+			if len(parsedQuery) == 0 {
+				refs[ref] = append(refs[ref], &nodeRef{part: "all", node: node})
+				continue
+			}
+			refs[ref] = append(refs[ref], &nodeRef{part: parsedQuery["part"][0], node: node})
 		}
 	}
 
@@ -80,7 +102,44 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 		}
 
 		for _, node := range nodes {
-			node.Value = digest.(string)
+			d := digest.(string)
+			parsed, err := url.Parse(d)
+			if err != nil {
+				return fmt.Errorf("failed to parse %q: %w", d, err)
+			}
+
+			switch node.part {
+			case "registry":
+				dir := path.Dir(parsed.Path)
+				node.node.Value = fmt.Sprintf("%s%s", parsed.Host, dir)
+			case "repository":
+				if strings.Contains(parsed.Path, "@") {
+					node.node.Value = fmt.Sprintf("%s%s", parsed.Host, parsed.Path[:strings.LastIndex(parsed.Path, "@")])
+				} else {
+					node.node.Value = fmt.Sprintf("%s%s", parsed.Host, parsed.Path[:strings.LastIndex(parsed.Path, ":")])
+				}
+			case "name":
+				basePath := path.Base(parsed.Path)
+				if strings.Contains(basePath, "@") {
+					node.node.Value = basePath[:strings.LastIndex(basePath, "@")]
+				} else {
+					node.node.Value = basePath[:strings.LastIndex(basePath, ":")]
+				}
+			case "tag":
+				if strings.Contains(parsed.Path, "@") {
+					node.node.Value = parsed.Path[strings.LastIndex(parsed.Path, "@")+1:]
+				} else {
+					node.node.Value = parsed.Path[strings.LastIndex(parsed.Path, ":")+1:]
+				}
+			case "tagWithSeparator":
+				if strings.Contains(parsed.Path, "@") {
+					node.node.Value = parsed.Path[strings.LastIndex(parsed.Path, "@"):]
+				} else {
+					node.node.Value = parsed.Path[strings.LastIndex(parsed.Path, ":"):]
+				}
+			default:
+				node.node.Value = d
+			}
 		}
 	}
 

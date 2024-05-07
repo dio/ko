@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"os"
 	"path"
 	"strings"
 	"sync"
@@ -101,6 +102,8 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 			return fmt.Errorf("resolved reference to %q not found", ref)
 		}
 
+		fmt.Fprintln(os.Stderr, "ref: ", ref)
+
 		for _, node := range nodes {
 			d := digest.(string)
 			parsed, err := url.Parse(d)
@@ -112,9 +115,6 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 			case "registry":
 				dir := path.Dir(parsed.Path)
 				node.node.Value = fmt.Sprintf("%s%s", parsed.Host, dir)
-			case "definedRegistry":
-				defined := parsed.Query().Get("part")
-				node.node.Value = strings.SplitN(defined, "=", 2)[1]
 			case "repository":
 				if strings.Contains(parsed.Path, ":") {
 					node.node.Value = fmt.Sprintf("%s%s", parsed.Host, parsed.Path[:strings.Index(parsed.Path, ":")])
@@ -142,7 +142,18 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 					node.node.Value = parsed.Path[strings.Index(parsed.Path, ":"):]
 				}
 			default:
-				node.node.Value = d
+				if strings.HasPrefix(node.part, "definedRegistry=") {
+					fmt.Fprintln(os.Stderr, "WARNING: definedRegistry is set to", node.part)
+					parts := strings.SplitN(node.part, "=", 2)
+					if len(parts) != 2 {
+						return fmt.Errorf("invalid definedRegistry part: %s", node.part)
+					}
+
+					node.node.Value = parts[1]
+					fmt.Fprintln(os.Stderr, "node.node.Value", node.node.Value)
+				} else {
+					node.node.Value = d
+				}
 			}
 		}
 	}

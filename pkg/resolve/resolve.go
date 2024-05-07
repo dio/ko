@@ -113,7 +113,8 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 				dir := path.Dir(parsed.Path)
 				node.node.Value = fmt.Sprintf("%s%s", parsed.Host, dir)
 			case "definedRegistry":
-				node.node.Value = parsed.Query().Get("definedRegistry")
+				defined := parsed.Query().Get("part")
+				node.node.Value = strings.SplitN(defined, "=", 2)[1]
 			case "repository":
 				if strings.Contains(parsed.Path, ":") {
 					node.node.Value = fmt.Sprintf("%s%s", parsed.Host, parsed.Path[:strings.Index(parsed.Path, ":")])

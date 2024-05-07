@@ -102,6 +102,8 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 			return fmt.Errorf("resolved reference to %q not found", ref)
 		}
 
+		fmt.Fprintln(os.Stderr, "ref: ", ref)
+
 		for _, node := range nodes {
 			d := digest.(string)
 			parsed, err := url.Parse(d)
@@ -110,6 +112,7 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 			}
 
 			fmt.Fprintln(os.Stderr, "node.part: ", node.part)
+			fmt.Fprintln(os.Stderr, "d: ", d)
 
 			switch node.part {
 			case "registry":

@@ -144,13 +144,17 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 			default:
 				if strings.HasPrefix(node.part, "definedRegistry=") {
 					fmt.Fprintln(os.Stderr, "WARNING: definedRegistry is set to", node.part)
-					parts := strings.SplitN(node.part, "=", 2)
-					if len(parts) != 2 {
-						return fmt.Errorf("invalid definedRegistry part: %s", node.part)
+					// If we define KO_TEST, we will use the host as the registry.
+					if os.Getenv("KO_TEST") != "" {
+						dir := path.Dir(parsed.Path)
+						node.node.Value = fmt.Sprintf("%s%s", parsed.Host, dir)
+					} else {
+						parts := strings.SplitN(node.part, "=", 2)
+						if len(parts) != 2 {
+							return fmt.Errorf("invalid definedRegistry part: %s", node.part)
+						}
+						node.node.Value = parts[1]
 					}
-
-					node.node.Value = parts[1]
-					fmt.Fprintln(os.Stderr, "node.node.Value", node.node.Value)
 				} else {
 					node.node.Value = d
 				}

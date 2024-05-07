@@ -109,6 +109,8 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 				return fmt.Errorf("failed to parse %q: %w", d, err)
 			}
 
+			fmt.Fprintln(os.Stderr, "node.part: ", node.part)
+
 			switch node.part {
 			case "registry":
 				dir := path.Dir(parsed.Path)

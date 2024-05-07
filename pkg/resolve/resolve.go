@@ -111,17 +111,6 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 				return fmt.Errorf("failed to parse %q: %w", d, err)
 			}
 
-			fmt.Fprintln(os.Stderr, "node.part: ", node.part)
-			fmt.Fprintln(os.Stderr, "d: ", d)
-
-			if strings.HasPrefix(node.part, "definedRegistry=") {
-				parts := strings.SplitN(node.part, "=", 2)
-				if len(parts) != 2 {
-					return fmt.Errorf("invalid definedRegistry part: %s", node.part)
-				}
-				node.node.Value = parts[1]
-			}
-
 			switch node.part {
 			case "registry":
 				dir := path.Dir(parsed.Path)
@@ -153,7 +142,21 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 					node.node.Value = parsed.Path[strings.Index(parsed.Path, ":"):]
 				}
 			default:
-				node.node.Value = d
+				if strings.HasPrefix(node.part, "definedRegistry=") {
+					fmt.Fprintln(os.Stderr, "YAY")
+					fmt.Fprintln(os.Stderr, "node.part: ", node.part)
+					fmt.Fprintln(os.Stderr, "d: ", d)
+
+					parts := strings.SplitN(node.part, "=", 2)
+					if len(parts) != 2 {
+						return fmt.Errorf("invalid definedRegistry part: %s", node.part)
+					}
+
+					node.node.Value = parts[1]
+					fmt.Fprintln(os.Stderr, "node.node.Value", node.node.Value)
+				} else {
+					node.node.Value = d
+				}
 			}
 		}
 	}

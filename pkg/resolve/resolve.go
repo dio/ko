@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"os"
 	"path"
 	"strings"
 	"sync"
@@ -114,6 +115,7 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 				node.node.Value = fmt.Sprintf("%s%s", parsed.Host, dir)
 			case "definedRegistry":
 				node.node.Value = parsed.Query().Get("name")
+				fmt.Fprintln(os.Stderr, "definedRegistry: ", node.node.Value)
 			case "repository":
 				if strings.Contains(parsed.Path, ":") {
 					node.node.Value = fmt.Sprintf("%s%s", parsed.Host, parsed.Path[:strings.Index(parsed.Path, ":")])

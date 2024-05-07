@@ -144,8 +144,9 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 			default:
 				if strings.HasPrefix(node.part, "definedRegistry=") {
 					fmt.Fprintln(os.Stderr, "WARNING: definedRegistry is set to", node.part)
-					// If we define KO_TEST, we will use the host as the registry.
-					if os.Getenv("KO_TEST") != "" {
+					// If we define KO_USE_HOST_REGISTRY, we will use the host as the registry.
+					if os.Getenv("KO_ALWAYS_USE_HOST_AS_REGISTRY") != "" {
+						fmt.Fprintln(os.Stderr, "WARNING: KO_ALWAYS_USE_HOST_AS_REGISTRY is defined, we will use the host as the registry")
 						dir := path.Dir(parsed.Path)
 						node.node.Value = fmt.Sprintf("%s%s", parsed.Host, dir)
 					} else {

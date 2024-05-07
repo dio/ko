@@ -114,13 +114,18 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 			fmt.Fprintln(os.Stderr, "node.part: ", node.part)
 			fmt.Fprintln(os.Stderr, "d: ", d)
 
+			if strings.HasPrefix(node.part, "definedRegistry=") {
+				parts := strings.SplitN(node.part, "=", 2)
+				if len(parts) != 2 {
+					return fmt.Errorf("invalid definedRegistry part: %s", node.part)
+				}
+				node.node.Value = parts[1]
+			}
+
 			switch node.part {
 			case "registry":
 				dir := path.Dir(parsed.Path)
 				node.node.Value = fmt.Sprintf("%s%s", parsed.Host, dir)
-			case "definedRegistry":
-				node.node.Value = parsed.Query().Get("name")
-				fmt.Fprintln(os.Stderr, "definedRegistry: ", node.node.Value)
 			case "repository":
 				if strings.Contains(parsed.Path, ":") {
 					node.node.Value = fmt.Sprintf("%s%s", parsed.Host, parsed.Path[:strings.Index(parsed.Path, ":")])
